@@ -11,8 +11,9 @@ plugins {
 version = "0.0.1"
 
 omegat {
-    version = "5.4.1"
-    pluginClass = "org.omegat.filters2.text.dokuwiki.DokuWikiFilter"
+    version = "5.7.1"
+    pluginClass = "org.unlsycn.gui.AnkiConnectPopup"
+    debugPort = 2999
 }
 
 dependencies {

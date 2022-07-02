@@ -1,1 +1,1 @@
-rootProject.name = "plugin-skeleton"
+rootProject.name = "anki-connect-omegat"
