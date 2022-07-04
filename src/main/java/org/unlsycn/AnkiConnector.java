@@ -44,43 +44,7 @@ public class AnkiConnector
     private Request constructRequest()
     {
         // AnkiConnect only support JSON as request body
-        String JSONBody = """
-                {
-                    "action": "addNote",
-                    "version": 6,
-                    "key": \"""" + ANKI_CONNECT_KEY + """
-                ",
-                "params": {
-                    "note": {
-                        "deckName": \"""" + ANKI_DECK_NAME + """
-                ",
-                "modelName": \"""" + ANKI_MODEL_NAME + """
-                ",
-                "options": {
-                    "allowDuplicate": false,
-                    "duplicateScope": "deck"
-                },
-                "tags": [],
-                "fields": {
-                    "Date": \"""" + date + """
-                ",
-                "Text": \"""" + word + """
-                ",
-                "Translation": \"""" + translation + """
-                ",
-                "Context": \"""" + context + """
-                ",
-                "ContextCloze": \"""" + contextCloze + """
-                ",
-                "Note": \"""" + note + """
-                ",
-                "Title": \"""" + title + """
-                                "
-                            }
-                        }
-                    }
-                }
-                """;
+        String JSONBody = "{\"action\":\"addNote\",\"version\":6,\"key\":\"" + ANKI_CONNECT_KEY + "\",\"params\":{\"note\":{\"deckName\":\"" + ANKI_DECK_NAME + "\",\"modelName\":\" " + ANKI_MODEL_NAME + "\",\"options\":{\"allowDuplicate\":false,\"duplicateScope\":\"deck\"},\"tags\":[],\"fields\":{\"Date\":\"" + date + "\",\"Text\":\"" + word + "\",\"Translation\":\"" + translation + "\",\"Context\":\"" + context + "\",\"ContextCloze\":\"" + contextCloze + "\",\"Note\":\"" + note + "\",\"Title\":\"" + title + "\"}}}}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), JSONBody);
         return new Request.Builder().url("http://127.0.0.1:8765").post(body).build();
     }
