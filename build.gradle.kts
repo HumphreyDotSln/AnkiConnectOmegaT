@@ -19,9 +19,9 @@ omegat {
 
 dependencies {
     packIntoJar("org.slf4j:slf4j-api:1.7.36")
-    packIntoJar("commons-io:commons-io:2.11.0")
-    packIntoJar("commons-lang:commons-lang:2.6")
-    packIntoJar("org.slf4j:slf4j-nop:1.7.36")
+    implementation("commons-io:commons-io:2.11.0")
+    implementation("commons-lang:commons-lang:2.6")
+    implementation("org.slf4j:slf4j-nop:1.7.36")
     packIntoJar("com.intellij:forms_rt:7.0.3")
     packIntoJar("com.squareup.okhttp3:okhttp:4.10.0")
     testImplementation("junit:junit:4.13.2")
