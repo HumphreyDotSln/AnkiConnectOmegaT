@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 
 public class AnkiConnectDialog extends JDialog
 {
-    private final String originalWord, originalContext, originalTranslation;
+    private final String originalWord, originalContext, originalTranslation, originalTitle, date;
     private JPanel contentPane;
     private JButton buttonSend;
     private JButton buttonCancel;
@@ -24,12 +24,16 @@ public class AnkiConnectDialog extends JDialog
     private JTextArea textAreaContext;
     private JTextArea textAreaNote;
     private JLabel labelNote;
+    private JTextField textFieldTitle;
+    private JLabel labelTitle;
     
-    public AnkiConnectDialog(String word, String context, String translation)
+    public AnkiConnectDialog(String word, String context, String translation, String title, String date)
     {
         this.originalWord = word;
         this.originalContext = context;
         this.originalTranslation = translation;
+        this.originalTitle = title;
+        this.date = date;
         initComponents();
         setVisible(true);
     }
@@ -53,19 +57,27 @@ public class AnkiConnectDialog extends JDialog
             }
         });
         
-        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         
         pack();
         setLocationRelativeTo(null);
         
         textFieldWord.setText(originalWord);
         textAreaContext.setText(originalContext);
-        textAreaTranslation.setText("[:: OmegaT ::]\n" + originalTranslation + "\n---------------");
+        textAreaTranslation.setText(originalTranslation);
+        textFieldTitle.setText(originalTitle);
     }
     
     private void onSend()
     {
-        
+        new AnkiConnector(textFieldWord.getText(),
+                textAreaContext.getText(),
+                textAreaTranslation.getText(),
+                textAreaNote.getText(),
+                textFieldTitle.getText(),
+                date).Post();
         dispose();
     }
     
@@ -94,51 +106,318 @@ public class AnkiConnectDialog extends JDialog
         contentPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel1,
+                new GridConstraints(2,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                        1,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1, true, false));
-        panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel1.add(panel2,
+                new GridConstraints(0,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         buttonSend = new JButton();
         buttonSend.setText("Send");
-        panel2.add(buttonSend, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonSend,
+                new GridConstraints(0,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         buttonCancel = new JButton();
         buttonCancel.setText("Cancel");
-        panel2.add(buttonCancel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonCancel,
+                new GridConstraints(0,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(7, 4, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.setLayout(new GridLayoutManager(9, 4, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.add(panel3,
+                new GridConstraints(0,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         textFieldWord = new JTextField();
         textFieldWord.setText("");
-        panel3.add(textFieldWord, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
+        panel3.add(textFieldWord,
+                new GridConstraints(0,
+                        1,
+                        1,
+                        3,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        new Dimension(400, -1),
+                        null,
+                        0,
+                        false));
         textAreaTranslation = new JTextArea();
         textAreaTranslation.setLineWrap(true);
-        panel3.add(textAreaTranslation, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(400, 125), null, 0, false));
+        panel3.add(textAreaTranslation,
+                new GridConstraints(4,
+                        1,
+                        1,
+                        2,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        null,
+                        new Dimension(400, 125),
+                        null,
+                        0,
+                        false));
         textAreaContext = new JTextArea();
         textAreaContext.setLineWrap(true);
-        panel3.add(textAreaContext, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(400, 125), null, 0, false));
+        panel3.add(textAreaContext,
+                new GridConstraints(2,
+                        1,
+                        1,
+                        2,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        null,
+                        new Dimension(400, 125),
+                        null,
+                        0,
+                        false));
         labelWord = new JLabel();
         labelWord.setText("Word");
-        panel3.add(labelWord, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelWord,
+                new GridConstraints(0,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         labelContext = new JLabel();
         labelContext.setText("Context");
-        panel3.add(labelContext, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelContext,
+                new GridConstraints(2,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         labelTranslation = new JLabel();
         labelTranslation.setText("Translation");
-        panel3.add(labelTranslation, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelTranslation,
+                new GridConstraints(4,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         textAreaNote = new JTextArea();
         textAreaNote.setLineWrap(true);
-        panel3.add(textAreaNote, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(400, 125), null, 0, false));
+        panel3.add(textAreaNote,
+                new GridConstraints(6,
+                        1,
+                        1,
+                        2,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_BOTH,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        null,
+                        new Dimension(400, 125),
+                        null,
+                        0,
+                        false));
         labelNote = new JLabel();
         labelNote.setText("Note");
-        panel3.add(labelNote, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelNote,
+                new GridConstraints(6,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final Spacer spacer1 = new Spacer();
-        panel3.add(spacer1, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(spacer1,
+                new GridConstraints(3,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_VERTICAL,
+                        1,
+                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final Spacer spacer2 = new Spacer();
-        panel3.add(spacer2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(spacer2,
+                new GridConstraints(1,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_VERTICAL,
+                        1,
+                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final Spacer spacer3 = new Spacer();
-        panel3.add(spacer3, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(spacer3,
+                new GridConstraints(5,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_VERTICAL,
+                        1,
+                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
+        textFieldTitle = new JTextField();
+        panel3.add(textFieldTitle,
+                new GridConstraints(8,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        new Dimension(150, -1),
+                        null,
+                        0,
+                        false));
+        labelTitle = new JLabel();
+        labelTitle.setText("Title");
+        panel3.add(labelTitle,
+                new GridConstraints(8,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_WEST,
+                        GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
         final Spacer spacer4 = new Spacer();
-        contentPane.add(spacer4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(spacer4,
+                new GridConstraints(7,
+                        1,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_VERTICAL,
+                        1,
+                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
+        final Spacer spacer5 = new Spacer();
+        contentPane.add(spacer5,
+                new GridConstraints(1,
+                        0,
+                        1,
+                        1,
+                        GridConstraints.ANCHOR_CENTER,
+                        GridConstraints.FILL_VERTICAL,
+                        1,
+                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        null,
+                        null,
+                        0,
+                        false));
     }
     
     /**

@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
 /**
  * plugin popup menu
@@ -15,7 +16,7 @@ import java.awt.event.ActionListener;
 public class AnkiConnectPopup implements IPopupMenuConstructor
 {
     /**
-     * add AnkiConnectItem to right-click menu when the menu is to load.
+     * add AnkiConnectItem to right-click menu when the **menu is to load**.
      *
      * @param menu     right-click popup menu
      * @param mousePos mouse position when open the menu
@@ -28,12 +29,13 @@ public class AnkiConnectPopup implements IPopupMenuConstructor
         if (selection == null)// when no text is selected
         {
             return;
-        } else if (!context.contains(selection))
+        }
+        if (!context.contains(selection))
         {
             return;
         }
         JMenuItem ankiMenuItem = new JMenuItem("Send to Anki");
-        ankiMenuItem.addActionListener(new AnkiConnectMenuItemActionListener(selection, context));
+        ankiMenuItem.addActionListener(new AnkiConnectMenuItemActionListener());
         menu.add(ankiMenuItem);
     }
     
@@ -42,28 +44,22 @@ public class AnkiConnectPopup implements IPopupMenuConstructor
      */
     private static class AnkiConnectMenuItemActionListener implements ActionListener
     {
-        private final String selection;
-        private final String context;
-        
         /**
-         * @param selection currently selected text
-         * @param context   currently source text
-         */
-        public AnkiConnectMenuItemActionListener(String selection, String context)
-        {
-            this.selection = selection;
-            this.context = context;
-        }
-        
-        /**
+         * Called when the **menu item is clicked**.
+         *
          * @param event the event to be processed
          */
         public void actionPerformed(ActionEvent event)
         {
-            final String word = selection.trim();
+            final String word = Core.getEditor().getSelectedText().trim();
+            final String context = Core.getEditor().getCurrentEntry().getSrcText().trim();
             final String translation = Core.getEditor().getCurrentTranslation().trim();
+            String file = Core.getEditor().getCurrentFile().trim();
+            final String title = file.substring(0, file.lastIndexOf("."));
+            final String date = new Timestamp(System.currentTimeMillis()).toString();
+            
             // create a form which can send text to Anki
-            AnkiConnectDialog dialog = new AnkiConnectDialog(word, context, translation);
+            new AnkiConnectDialog(word, context, translation, title, date);
         }
     }
 }
