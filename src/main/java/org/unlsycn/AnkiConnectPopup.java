@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 
 /**
  * plugin popup menu
@@ -56,7 +55,7 @@ public class AnkiConnectPopup implements IPopupMenuConstructor
             final String translation = Core.getEditor().getCurrentTranslation().trim();
             String file = Core.getEditor().getCurrentFile().trim();
             final String title = file.substring(0, file.lastIndexOf("."));
-            final String date = new Timestamp(System.currentTimeMillis()).toString();
+            final String date = Long.toString(System.currentTimeMillis());
             
             // create a form which can send text to Anki
             new AnkiConnectDialog(word, context, translation, title, date);
