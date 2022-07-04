@@ -1,0 +1,3 @@
+[filter "gitignore"]
+	smudge = cat
+	clean = sed '/\/\/#gitignore$/d'
