@@ -73,9 +73,9 @@ public class AnkiConnectDialog extends JDialog
     private void onSend()
     {
         new AnkiConnector(textFieldWord.getText(),
-                textAreaContext.getText(),
-                textAreaTranslation.getText(),
-                textAreaNote.getText(),
+                textAreaContext.getText().replaceAll("\n", "<br/>"),
+                textAreaTranslation.getText().replaceAll("\n", "<br/>"),
+                textAreaNote.getText().replaceAll("\n", "<br/>"),
                 textFieldTitle.getText(),
                 date).Post();
         dispose();
