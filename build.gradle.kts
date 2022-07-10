@@ -5,8 +5,7 @@ plugins {
     // checkstyle
     distribution
     maven
-    id("org.omegat.gradle") version "1.4.2"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.omegat.gradle") version "1.5.7"
 }
 
 version = "0.0.1"
